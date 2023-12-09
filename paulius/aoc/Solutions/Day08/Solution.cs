@@ -1,18 +1,14 @@
-﻿using Sprache;
-using System.Net;
+﻿namespace Days.Day08;
+
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Tools;
-
-namespace Days.Day08;
 using Input = (string Instructions, Dictionary<string, string> Network, string[] Nodes);
-
 
 file class Solution : ISolution<Input>
 {
     public async Task<Input> LoadInput()
     {
-        var lines = await File.ReadAllLinesAsync(this.GetInputFile("input"));
+        var lines = await File.ReadAllLinesAsync(this.GetInputFile("test"));
         var r = new Regex(@"(?<item1>\w+) = \((?<item2>\w+), (?<item3>\w+)\)");
 
         var instructions = lines[0];
