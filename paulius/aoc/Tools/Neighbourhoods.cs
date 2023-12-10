@@ -25,6 +25,18 @@ public static class Neighbourhoods
     public static IEnumerable<Coord2D> GetNear8(Coord2D center) => GetNear(center, Near8);
     public static IEnumerable<Coord2D> GetNear(Coord2D center, Coord2D[] near) => from nc in near select center + nc;
 
+    public static Coord2D N = new (-1, 0);
+    
+    public static Coord2D NW = new (-1, -1);
+    
+    public static Coord2D NE = new (-1, 1);
+    public static Coord2D W = new (0, -1);
+    public static Coord2D E = new (0, 1);
+    public static Coord2D C = new (0, 0);
+    public static Coord2D S = new (1, 0);
+    public static Coord2D SW = new (1, -1);
+    public static Coord2D SE = new (1, 1);
+
     public record Coord2D(long r, long c)
     {
         public static Coord2D Zero = new Coord2D(0, 0);

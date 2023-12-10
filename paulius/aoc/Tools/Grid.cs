@@ -9,6 +9,7 @@ public class Grid<T> : Dictionary<Coord2D, T>
 
     public Grid(Dictionary<Coord2D, T> source): base(source){ }
 
+    public Grid(IEnumerable<KeyValuePair<Coord2D, T>> source): base(source){ }
     public void Add(Grid<T> toAdd, Coord2D offset)
     {
         foreach (var kv in toAdd)
