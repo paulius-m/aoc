@@ -83,4 +83,8 @@ public class Grid<T> : Dictionary<Coord2D, T>
         return b.ToString();
     }
 
+    public static KeyValuePair<Coord2D, T> Coord(int ri, int ci, T c)
+    {
+        return KeyValuePair.Create(new Coord2D(ri, ci), c);
+    }
 }
