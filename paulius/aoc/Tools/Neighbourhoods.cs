@@ -5,7 +5,7 @@ using MapQueue = PriorityQueue<Neighbourhoods.Coord2D, int>;
 
 public static class Neighbourhoods
 {
-    private static int[] ncoords = new[] { -1, 0, 1 };
+    private static int[] ncoords = [-1, 0, 1];
 
     public readonly static Coord2D[] Near4 = (from c in ncoords
                                                      from r in ncoords
@@ -45,9 +45,10 @@ public static class Neighbourhoods
         public static Coord2D operator -(Coord2D a, Coord2D b) => new(a.r - b.r, a.c - b.c);
         public static Coord2D operator -(Coord2D a) => new(-a.r, -a.c);
         public static Coord2D operator *(Coord2D a, long b) => new(a.r * b, a.c * b);
-
         public Coord2D RotateRight() => new(c, -r);
         public Coord2D RotateLeft() => new(-c, r);
+
+        public long ManhatanDistance(Coord2D b) => Math.Abs(r - b.r) + Math.Abs(c - b.c);
     }
 
     public delegate int? CostFunction(Map map, Coord2D from, Coord2D to);

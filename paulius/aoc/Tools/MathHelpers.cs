@@ -21,4 +21,7 @@ public static class MathHelpers
 
     public static T LeastCommonMultiple<T>(this IEnumerable<T> values) where T : INumber<T>
         => values.Aggregate(LeastCommonMultiple);
+
+    public static T GreatestCommonDivisor<T>(this IEnumerable<T> values) where T : INumber<T>
+    => values.Aggregate(GreatestCommonDivisor);
 }
