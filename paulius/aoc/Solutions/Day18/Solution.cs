@@ -119,7 +119,6 @@ file class Solution : ISolution<Input>
             head = next;
         }
 
-
         return Area(polygon);
     }
 
