@@ -83,6 +83,16 @@ public class Grid<T> : Dictionary<Coord2D, T>
         return b.ToString();
     }
 
+    public string ToReversedVoidString(T fill, T border)
+    {
+        var minR = Keys.Min(k => k.r);
+        var maxR = Keys.Max(k => k.r);
+        var minC = Keys.Min(k => k.c);
+        var maxC = Keys.Max(k => k.c);
+
+        return ToReversedVoidString(fill, border, minC, maxC, minR, maxR);
+    }
+
     public static KeyValuePair<Coord2D, T> Coord(int ri, int ci, T c)
     {
         return KeyValuePair.Create(new Coord2D(ri, ci), c);
