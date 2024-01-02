@@ -80,6 +80,11 @@ public record AABB
         return true;
     }
 
+    public bool Contains(float[] point)
+    {
+        return Ranges.Zip(point, (r, p) => r.Contains(p)).All(Operators.Identity);
+    }
+
     public long Volume()
     {
         var v = Ranges.Product(cr => cr.To - cr.From + 1);

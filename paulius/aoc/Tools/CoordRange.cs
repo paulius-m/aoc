@@ -22,6 +22,12 @@ public record CoordRange
     {
         return From <= point && point <= To;
     }
+
+    public bool Contains(float point)
+    {
+        return From <= point && point <= To;
+    }
+
     public bool Overlaps(CoordRange r)
     {
         return r.From <= To && r.To >= From;
