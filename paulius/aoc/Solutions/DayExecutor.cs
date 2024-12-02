@@ -25,7 +25,7 @@ public class DayExecutor
         var solutions = GetSolutions(assembly);
 
         return solutions
-            .MaxBy(t => Convert.ToInt32(new string(t.FullName!.Split(".")[1].Where(char.IsNumber).ToArray())))!;
+            .MaxBy(t => Convert.ToInt32(new string(t.FullName!.Split(".")[0..^1].SelectMany(d => d.Where(char.IsNumber)).ToArray())))!;
     }
 
     private static IEnumerable<Type> GetSolutions(Assembly assembly)

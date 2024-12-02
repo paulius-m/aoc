@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Tools;
+﻿namespace Tools;
 
 public static class Operators
 {

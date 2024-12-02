@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tools;
+﻿namespace Tools;
 public record CoordRange
 {
     public long From { get; set; }
