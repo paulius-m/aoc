@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="*/*.txt">
+    <None Include="*/*/*.txt">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -20,20 +20,5 @@
     <PackageReference Include="BigRationalLibrary" Version="1.0.0" />
     <PackageReference Include="Microsoft.Z3" Version="4.12.2" />
     <PackageReference Include="Raylib-cs" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Y2024\Day01\input.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Y2024\Day01\test.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Y2024\Day02\input.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Y2024\Day02\test.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

@@ -28,6 +28,20 @@ public static class MatchToObject
 
         var m = r.Match(input);
 
+        return ParseMatch<T>(m);
+    }
+
+    public static T[] Matches<T>(this Regex r, string input)
+    {
+        var m = r.Matches(input);
+
+        return m.Select(ParseMatch<T>).ToArray();
+    }
+
+    private static T ParseMatch<T>(Match m)
+    {
+        Type type = typeof(T);
+
         if (HasDefaultConstructor(type))
         {
             var t = Activator.CreateInstance(type);
@@ -52,7 +66,8 @@ public static class MatchToObject
                 }
             }
             return (T)t;
-        } else
+        }
+        else
         {
             var icic = StringComparison.InvariantCultureIgnoreCase;
 
@@ -69,7 +84,9 @@ public static class MatchToObject
 
     private static bool HasDefaultConstructor(Type type)
     {
-        return type.GetConstructors().Any(t => t.GetParameters().Count() == 0);
+        var ctors = type.GetConstructors();
+
+        return ctors.Length is 0 || ctors.Any(t => t.GetParameters().Count() == 0);
     }
 
     private static object Convert(Group g, Type t)
