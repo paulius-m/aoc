@@ -8,34 +8,37 @@ public static class Neighbourhoods
     private static int[] ncoords = [-1, 0, 1];
 
     public readonly static Coord2D[] Near4 = (from c in ncoords
-                                                     from r in ncoords
-                                                     where (r is 0 || c is 0) && (r, c) is not (0, 0)
-                                                     select new Coord2D(r, c)).ToArray();
+                                              from r in ncoords
+                                              where (r is 0 || c is 0) && (r, c) is not (0, 0)
+                                              select new Coord2D(r, c)).ToArray();
+
+    public readonly static Coord2D[] Near4X = (from c in ncoords
+                                               from r in ncoords
+                                               where (r is not 0 && c is not 0) && (r, c) is not (0, 0)
+                                               select new Coord2D(r, c)).ToArray();
 
     public readonly static Coord2D[] Near8 = (from c in ncoords
-                                                     from r in ncoords
-                                                     where (r, c) is not (0, 0)
-                                                     select new Coord2D(r, c)).ToArray();
+                                              from r in ncoords
+                                              where (r, c) is not (0, 0)
+                                              select new Coord2D(r, c)).ToArray();
 
     public readonly static Coord2D[] Near9 = (from c in ncoords
-                                                     from r in ncoords
-                                                     select new Coord2D(r, c)
-                                                     ).ToArray();
+                                              from r in ncoords
+                                              select new Coord2D(r, c)
+                                             ).ToArray();
     public static IEnumerable<Coord2D> GetNear4(Coord2D center) => GetNear(center, Near4);
     public static IEnumerable<Coord2D> GetNear8(Coord2D center) => GetNear(center, Near8);
     public static IEnumerable<Coord2D> GetNear(Coord2D center, Coord2D[] near) => from nc in near select center + nc;
 
-    public static Coord2D N = new (-1, 0);
-    
-    public static Coord2D NW = new (-1, -1);
-    
-    public static Coord2D NE = new (-1, 1);
-    public static Coord2D W = new (0, -1);
-    public static Coord2D E = new (0, 1);
-    public static Coord2D C = new (0, 0);
-    public static Coord2D S = new (1, 0);
-    public static Coord2D SW = new (1, -1);
-    public static Coord2D SE = new (1, 1);
+    public static Coord2D N = new(-1, 0);
+    public static Coord2D NW = new(-1, -1);
+    public static Coord2D NE = new(-1, 1);
+    public static Coord2D W = new(0, -1);
+    public static Coord2D E = new(0, 1);
+    public static Coord2D C = new(0, 0);
+    public static Coord2D S = new(1, 0);
+    public static Coord2D SW = new(1, -1);
+    public static Coord2D SE = new(1, 1);
 
     public record Coord2D(long r, long c)
     {
