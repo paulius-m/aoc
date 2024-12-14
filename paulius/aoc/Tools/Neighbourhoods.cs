@@ -27,6 +27,7 @@ public static class Neighbourhoods
                                               select new Coord2D(r, c)
                                              ).ToArray();
     public static IEnumerable<Coord2D> GetNear4(Coord2D center) => GetNear(center, Near4);
+    public static IEnumerable<Coord2D> GetNear4X(Coord2D center) => GetNear(center, Near4X);
     public static IEnumerable<Coord2D> GetNear8(Coord2D center) => GetNear(center, Near8);
     public static IEnumerable<Coord2D> GetNear(Coord2D center, Coord2D[] near) => from nc in near select center + nc;
 

@@ -47,9 +47,14 @@ public class Grid<T> : Dictionary<Coord2D, T>
         var minC = Keys.Min(k => k.c);
         var maxC = Keys.Max(k => k.c);
 
+        return ToVoidString(fill, minC, maxC, minR, maxR);
+    }
+
+    public string ToVoidString(T fill, long minC, long maxC, long minR, long maxR)
+    {
         var b = new StringBuilder();
 
-        for (var r = minR; r<= maxR; r++)
+        for (var r = minR; r <= maxR; r++)
         {
             for (var c = minC; c <= maxC; c++)
             {
