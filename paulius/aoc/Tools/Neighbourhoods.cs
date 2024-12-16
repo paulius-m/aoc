@@ -1,7 +1,6 @@
 ﻿namespace Tools;
-using Map = Dictionary<Neighbourhoods.Coord2D, char>;
-using MapPoint = KeyValuePair<Neighbourhoods.Coord2D, char>;
-using MapQueue = PriorityQueue<Neighbourhoods.Coord2D, int>;
+
+using Sprache;
 
 public static class Neighbourhoods
 {
@@ -55,20 +54,20 @@ public static class Neighbourhoods
         public long ManhatanDistance(Coord2D b) => Math.Abs(r - b.r) + Math.Abs(c - b.c);
     }
 
-    public delegate int? CostFunction(Map map, Coord2D from, Coord2D to);
-    public static int GetDistance(Map map, MapPoint start, MapPoint end, CostFunction f)
+    public delegate long? CostFunction<TMap, T>(TMap map, T from, T to) where T : notnull;
+    public delegate IEnumerable<T> NextFunction<TMap, T>(TMap map, T from) where T : notnull;
+    public static Dictionary<T, long> GetDistance<TMap, T>(TMap map, T start, CostFunction<TMap, T> f, NextFunction<TMap, T> nf) where T : notnull
     {
-        var distance = new Dictionary<Coord2D, int> { [start.Key] = 0 };
-        var q = new MapQueue();
-        q.Enqueue(start.Key, 0);
+        var distance = new Dictionary<T, long> { [start] = 0 };
+        var q = new PriorityQueue<T, long>();
+        q.Enqueue(start, 0);
 
         while (q.Count > 0)
         {
             var current = q.Dequeue();
             var currentCost = distance[current];
 
-            foreach (var (pos, cost) in from n in GetNear4(current)
-                                        where map.ContainsKey(n)
+            foreach (var (pos, cost) in from n in nf(map, current)
                                         select (n, f(map, current, n)))
             {
                 if (cost is not null)
@@ -84,6 +83,6 @@ public static class Neighbourhoods
             }
         }
 
-        return distance.GetValueOrDefault(end.Key, int.MaxValue);
+        return distance;
     }
 }
