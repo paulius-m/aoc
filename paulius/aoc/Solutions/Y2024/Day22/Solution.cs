@@ -40,8 +40,8 @@ file class Solution : ISolution<Input>
                      select (from ss in s
                              select ss % 10);
 
-        var diffs = (from p in prices
-                     select p.Zip(p.Pairwise((a, b) => b - a).Prepend(0)));
+        var diffs = from p in prices
+                     select p.Zip(p.Pairwise((a, b) => b - a).Prepend(0));
 
         var sequences = (from d in diffs
                          select (from w in d.Window(4)
