@@ -1,6 +1,7 @@
 ﻿using MoreLinq;
 using Tools;
 using Input = string[][];
+using System.Linq;
 
 namespace Days.Y2024.Day25
 {
@@ -21,20 +22,11 @@ namespace Days.Y2024.Day25
                     select KeyValuePair.Create(gg.Key, gg.ToArray())).ToDictionary();
 
             var (locks, keys) = (g[true], g[false]);
-            var count = 0;
-            foreach (var l in locks)
-            {
-                foreach (var k in keys)
-                {
-                    var check = l.Zip(k, (a, b) => a.Height + b.Height <= a.Space).ToArray();
-                    if (check.All(t => t))
-                    {
-                        count++;
-                    }
-                }
-            }
-
-            return count;
+            return (from l in locks
+                    from k in keys
+                    let check = l.Zip(k, (a, b) => a.Height + b.Height <= a.Space).ToArray()
+                    where check.All(t => t)
+                    select l).Count();
         }
 
         private (int Height, int Space)[] ToHeights(string[] i)
