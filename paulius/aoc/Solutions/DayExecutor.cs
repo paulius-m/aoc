@@ -41,6 +41,6 @@ public class DayExecutor
         var solutions = GetSolutions(assembly);
 
         return solutions
-            .First(t => t.FullName!.Split(".")[1] == day)!;
+            .First(t => t.Namespace == day)!;
     }
 }
