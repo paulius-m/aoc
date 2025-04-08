@@ -1,5 +1,8 @@
 ﻿using Tools;
 using System.Diagnostics;
+using System.Numerics;
+using System.Diagnostics.CodeAnalysis;
+using Numerics;
 
 namespace Days.Y2023.Day24;
 using Input = Ray[];
@@ -26,8 +29,6 @@ file class Solution : ISolution<Input>
 
     public object Part1(Input i)
     {
-        Test();
-
         var acc = 0;
 
         for (var j = 0; j < i.Length - 1; j++)
@@ -47,24 +48,44 @@ file class Solution : ISolution<Input>
         return acc;
     }
 
-    public object Part2(Input i)
+    public object Part2(Input input)
     {
+        List<HashSet<long>>[] uniq = [
+            [],
+            [],
+            []
+            ];
 
+        for (var i1 = 0; i1 < input.Length - 1; i1++)
+        {
+            var r1 = input[i1];
+            for (var i2 = i1 + 1; i2 < input.Length; i2++)
+            {
+                var r2 = input[i2];
+                for (var i3 = 0; i3 < r1.Direction.Length; i3++)
+                {
+                    if (r1.Direction[i3] == r2.Direction[i3])
+                    {
+                        var d = r1.Origin[i3] - r2.Origin[i3];
+                        var h = new HashSet<long>();
+                        for (var ro1 = -1000; ro1 < 1000; ro1++)
+                        {
+                            var vd = r1.Direction[i3] - ro1;
 
+                            if (vd != 0 && d % vd == 0)
+                                h.Add(ro1);
+                        }
+                        uniq[i3].Add(h);
+                    }
+                }
+            }
+        }
 
+        var v = uniq.SelectArray(u => u.Aggregate((a, b) => a.Intersect(b).ToHashSet()).Single());
 
-
-        Render.Draw(i);
-
-        return 0;
-    }
-
-    private void Test()
-    {
-        var a = new Ray([24, 13, 10], [-3, 1, 2]);
-        var b = new Ray([19, 13, 30], [-2, 1, -2]);
-
-        Debug.Assert(a.Intersects3D(b, new()));
+        var o1 = new Ray(input[0].Origin, Ray.Minus(input[0].Direction, v));
+        var o2 = new Ray(input[1].Origin, Ray.Minus(input[1].Direction, v));
+        Render.Draw(input);
+        return Ray.CalculateLineLineIntersection(o1, o2).Sum();
     }
 }
-

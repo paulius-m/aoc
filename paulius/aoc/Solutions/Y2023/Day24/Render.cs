@@ -6,7 +6,7 @@ namespace Days.Y2023.Day24;
 internal class Render
 {
     private static Color[] _colors = [
-        Color.MAGENTA, Color.RED, Color.BLUE, Color.YELLOW, Color.LIME, Color.GREEN
+        Color.MAGENTA, Color.RED, Color.BLUE, Color.YELLOW, Color.LIME, Color.GREEN,
 
         ];
     public static void Draw(Ray[] rays)
@@ -27,24 +27,18 @@ internal class Render
         while (!Raylib.WindowShouldClose())
         {
             Raylib.UpdateCamera(ref camera, CameraMode.CAMERA_FIRST_PERSON);
+            Raylib.SetMousePosition(100, 100);
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.BLACK);
 
             Raylib.BeginMode3D(camera);
-            Vector3? prev = null;
+
             for (int i1 = 0; i1 < rays.Length; i1++)
             {
 
                 Ray? r = rays[i1];
                 var p = new Vector3(r.PointAt(i / 10f));
                 Raylib.DrawLine3D(new(r.OriginF), p, _colors[i1 % _colors.Length]);
-
-                if (prev != null)
-                {
-                    Raylib.DrawLine3D(prev.Value, p, Color.PINK);
-                }
-
-                prev = p;
             }
 
             Raylib.DrawGrid(50, 10);
