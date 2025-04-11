@@ -1,9 +1,8 @@
 ﻿using System.Data;
 using System.Diagnostics;
-using System.Text;
 using Tools;
 using static Tools.Neighbourhoods;
-using System.Linq;
+using MoreLinq;
 
 namespace Days.Y2023.Day21;
 using Input = Grid<char>;
@@ -11,7 +10,7 @@ file class Solution : ISolution<Input>
 {
     public async Task<Input> LoadInput()
     {
-        return new((await File.ReadAllLinesAsync(this.GetInputFile("test")))
+        return new((await File.ReadAllLinesAsync(this.GetInputFile("input")))
                 .SelectMany((r, ri) => r.Select((c, ci) => KeyValuePair.Create(new Coord2D(ri, ci), c)))
                 );
     }
@@ -24,7 +23,7 @@ file class Solution : ISolution<Input>
     public object Part2(Input grid)
     {
         Test();
-        return GetCount3(grid, grid.First(kv => kv.Value is 'S').Key, 5000 /*26501365*/);
+        return GetCount2(grid, grid.First(kv => kv.Value is 'S').Key, 26501365);
     }
 
     public delegate long? CostFunction(Input map, Coord2D from, Coord2D to);
@@ -43,70 +42,26 @@ file class Solution : ISolution<Input>
         return q.Count;
     }
 
-    public static long GetCount2(Input map, Coord2D start, int steps)
+    public static long GetCount2(Input map, Coord2D start, long steps)
     {
         var rmap = (from kv in map
                     where kv.Value is '.' or 'S'
                     select kv.Key).ToHashSet();
-
-        var maxR = map.Keys.Max(k => k.r) + 1;
-        var maxC = map.Keys.Max(k => k.c) + 1;
-
-        HashSet<Coord2D> q = [start];
-        HashSet<Coord2D>[] prev =
-        [
-            [], []
-        ];
-
-        long[] prevL = new long[2];
-
-        for (int i = 0; i < steps; i++)
-        {
-            prev[i % 2] = q;
-            var preI = (i + 1) % 2;
-            prevL[preI] += prev[preI].Count;
-
-            var t = new HashSet<Coord2D>();
-            foreach (var current in q)
-            {
-                foreach (var n in GetNear4(current))
-                {
-                    if (rmap.Contains(Pin(n, maxR, maxC)) && !prev[preI].Contains(n))
-                    {
-                        t.Add(n);
-                    }
-                }
-            }
-            q = t;
-
-        }
-
-        return q.Count + prevL[steps % 2];
-    }
-
-    public static long GetCount3(Input map, Coord2D start, int steps)
-    {
-        var rmap = (from kv in map
-                    where kv.Value is '.' or 'S'
-                    select kv.Key).ToHashSet();
-
-        var rules = new Dictionary<Rule, Rule>();
 
         var setRef = new Dictionary<HashSet<Coord2D>, int>(HashSet<Coord2D>.CreateSetComparer());
+        var statsDic = new Dictionary<HashSet<int>, List<Stat>>(HashSet<int>.CreateSetComparer());
         var quadrants = new Dictionary<Coord2D, int>();
 
         var maxR = map.Keys.Max(k => k.r) + 1;
         var maxC = map.Keys.Max(k => k.c) + 1;
-        var empty2 = 0;
+
         var q = new HashSet<Coord2D>() { start };
         setRef[q] = 1;
         quadrants[new(0, 0)] = 1;
-
-        var i = 0;
         var reference = 1;
-        for (; i < steps; i++)
+        for (var i = 0; i < steps; i++)
         {
-            var uniqueCount = rules.Count;
+            var uniqueCount = setRef.Count;
 
             q = new(from current in q
                     from n in GetNear4(current)
@@ -129,137 +84,48 @@ file class Solution : ISolution<Input>
                 nQuadrants[quad] = cached;
             }
 
-            foreach (var current in nQuadrants)
-            {
-                var currentRule = GetRule(quadrants, empty2, current.Key);
-                var newRule = GetRule(nQuadrants, empty2, current.Key);
-
-                if (!rules.ContainsKey(currentRule))
-                    rules.Add(currentRule, newRule);
-            }
-
             quadrants = nQuadrants;
-            Console.WriteLine(ToVoidString(quadrants, -10, 10, -10, 10));
 
-            if (uniqueCount == rules.Count)
+            var stats = quadrants.GroupBy(kv => kv.Value).Select(g => KeyValuePair.Create(g.Key, g.LongCount())).OrderBy(g => g.Key).ToArray();
+            var statsKey = stats.Select(kv => kv.Key).ToHashSet();
+
+            var statsList = statsDic.TryGetValue(statsKey, out var l) ? l : new List<Stat>();
+            statsList.Add(new Stat(i, stats));
+            statsDic[statsKey] = statsList;
+
+            if (statsList.Count > 3)
             {
-                i++;
                 break;
             }
         }
-
         var reverseRef = (from kv in setRef
-                          select KeyValuePair.Create(kv.Value, kv.Key)).ToDictionary();
+                          select KeyValuePair.Create(kv.Value, (long)kv.Key.Count)).ToDictionary();
 
-        for (; i < steps; i++)
         {
-            Console.WriteLine(ToVoidString(quadrants, -10, 10, -10, 10));
-            quadrants = new(from current in quadrants
-                            let currentrule = GetRule(quadrants, empty2, current.Key)
-                            let newrule = rules[currentrule]
-                            from n in GetNear4(current.Key).Zip(newrule.n).Where(p => p.Second.Item2).Select(p => KeyValuePair.Create(p.First, p.Second.Item1)).Append(KeyValuePair.Create(current.Key, newrule.c))
-                            where n.Value != empty2
-                            group n.Value by n.Key into g
-                            select KeyValuePair.Create(g.Key, g.Distinct().Single()));
+            var cyclic = statsDic.Where(kv => kv.Value.Count > 1).ToArray();
+            var minIter = cyclic.Min(kv => kv.Value.Min(s => s.Iteration));
 
-            //Console.WriteLine(i);
-            //foreach (var stat in from quad in quadrants
-            //                     group quad by quad.Value)
-            //{
-            //    Console.WriteLine($"{stat.Key} : {stat.Count()}");
-            //}
+            var cycle = cyclic.SelectMany(kv => kv.Value.Pairwise((a, b) => b.Iteration - a.Iteration)).Distinct().Single();
 
-            //Console.WriteLine();
-            //Console.ReadLine();
-        }
+            var startIter = (steps - 1) % cycle;
+            for (; startIter < minIter; startIter += cycle) ;
+            var loops = (steps - startIter - 1) / cycle;
 
-        var qCount = quadrants.Sum(q => reverseRef[q.Value].Count);
-        return qCount;
+            var stats = cyclic.First(s => s.Value.Any(ss => ss.Iteration == startIter)).Value;
+            var startStat = stats.First(s => s.Iteration == startIter);
 
+            var multipliers = new long[stats[0].Stats.Length];
 
-        //Dictionary<Coord2D, int>[] prev =
-        //[
-        //    [], []
-        //];
-
-        //long[] prevL = new long[2];
-
-
-        //for (; i < steps; i++)
-        //{
-        //    var prevS = prev[i % 2];
-        //    prev[i % 2] = quadrants;
-        //    var preI = (i + 1) % 2;
-        //    prevL[preI] += prev[preI].Sum(q => reverseRef[q.Value].Count);
-
-        //    var t = new Dictionary<Coord2D, int>();
-        //    Console.WriteLine(ToVoidString(quadrants, -10, 10, -10, 10));
-        //    foreach (var n in from current in quadrants
-        //                      let rule = rules[current.Value]
-        //                      from n in GetNear4(current.Key).Zip(rule.n, (n, r) => KeyValuePair.Create(n, r)).Append(KeyValuePair.Create(current.Key, rule.c))
-        //                      where n.Value != empty2
-        //                      group n.Value by n.Key into g
-        //                      select KeyValuePair.Create(g.Key, g.Distinct().Single()))
-        //    {
-        //        if (!prev[preI].Contains(n))
-        //        {
-        //            t.Add(n.Key, n.Value);
-        //        }
-        //    }
-        //    quadrants = t;
-        //}
-
-        //var qCount = quadrants.Sum(q => reverseRef[q.Value].Count);
-
-        //return qCount + prevL[steps % 2];
-    }
-
-    static string ToVoidString(Dictionary<Coord2D, int> dict, long minC, long maxC, long minR, long maxR)
-    {
-        var b = new StringBuilder();
-
-        for (var r = minR; r <= maxR; r++)
-        {
-            for (var c = minC; c <= maxC; c++)
+            for (int i1 = 0; i1 < stats[0].Stats.Length; i1++)
             {
-                var at = new Coord2D(r, c);
+                var d1 = stats[1].Stats[i1].Value - stats[0].Stats[i1].Value;
+                var d2 = stats[2].Stats[i1].Value - stats[1].Stats[i1].Value - d1;
 
-                if (dict.TryGetValue(at, out int value))
-                {
-                    b.Append(value.ToString().PadLeft(4));
-                }
-                else { b.Append("    "); }
+                multipliers[i1] = startStat.Stats[i1].Value + loops * (loops - 1) / 2 * d2 + loops * d1;
             }
-            b.Append('\n');
+
+            return startStat.Stats.Zip(multipliers, (s, m) => reverseRef[s.Key] * m).Sum();
         }
-
-        return b.ToString();
-    }
-
-    private static Rule GetRule(Dictionary<Coord2D, int> quadrants, int empty, Coord2D quad)
-    {
-        var quadN = new (int, bool)[4];
-        var n4 = GetNear4(quad).ToArray();
-
-        var existingQ = quadrants.TryGetValue(quad, out var q);
-
-
-        for (int i = 0; i < n4.Length; i++)
-        {
-            Coord2D? n = n4[i];
-
-            if (quadrants.TryGetValue(n, out var quadSet))
-            {
-                quadN[i] = (quadSet, !existingQ);
-            }
-            else
-            {
-                quadN[i] = (empty, existingQ);
-            }
-        }
-
-        var rule = new Rule(quadN, existingQ? q : empty);
-        return rule;
     }
 
     static Coord2D Pin(Coord2D n, long maxR, long maxC)
@@ -296,36 +162,4 @@ file class Solution : ISolution<Input>
 }
 
 
-file class Rule
-{
-    public readonly (int, bool)[] n;
-    public readonly int c;
-
-    public Rule((int, bool)[] n, int c)
-    {
-        this.n = n;
-        this.c = c;
-    }
-
-    public override int GetHashCode()
-    {
-        if (n.Length is 0)
-        {
-            return c.GetHashCode();
-        }
-        return n.Aggregate(0, (a, b) => a.GetHashCode() ^ b.GetHashCode()) ^ c.GetHashCode();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        var r = obj as Rule;
-        if (r is null) return false;
-
-        return r.n.SequenceEqual(n) && r.c == c;
-    }
-
-    public override string ToString()
-    {
-        return string.Join(',', n) + ',' + c;
-    }
-}
+file record Stat(long Iteration, KeyValuePair<int, long>[] Stats);
