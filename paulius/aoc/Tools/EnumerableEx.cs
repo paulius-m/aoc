@@ -7,6 +7,11 @@ public static class EnumerableEx
         return self.Select(f).Aggregate(Operators.Multiply);
     }
 
+    public static long Product(this IEnumerable<long> self)
+    {
+        return self.Aggregate(Operators.Multiply);
+    }
+
     public static TResult[] SelectArray<T, TResult>(this T[] self, Func<T, TResult> f)
     {
         var result = new TResult[self.Length];
