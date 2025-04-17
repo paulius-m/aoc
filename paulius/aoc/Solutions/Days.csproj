@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <PackageReference Include="BigRationalLibrary" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Z3" Version="4.12.2" />
     <PackageReference Include="Raylib-cs" Version="5.0.0" />
   </ItemGroup>
 </Project>
