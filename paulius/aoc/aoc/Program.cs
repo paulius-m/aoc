@@ -1,3 +1,3 @@
 ﻿using Days;
 
-await DayExecutor.Run();
+await DayExecutor.Run("Days.Y2022.Day12");
