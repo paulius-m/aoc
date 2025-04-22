@@ -1,6 +1,4 @@
-﻿using Days.Y2023.Day05;
-using MoreLinq;
-using System.Linq;
+﻿using MoreLinq;
 using Tools;
 using static Tools.Neighbourhoods;
 

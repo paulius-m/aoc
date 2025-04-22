@@ -2,7 +2,6 @@
 using Sprache;
 using Tools;
 using static Tools.Neighbourhoods;
-using Pastel;
 
 namespace Days.Y2024.Day20;
 

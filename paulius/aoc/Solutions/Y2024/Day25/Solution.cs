@@ -1,7 +1,6 @@
 ﻿using MoreLinq;
 using Tools;
 using Input = string[][];
-using System.Linq;
 
 namespace Days.Y2024.Day25
 {

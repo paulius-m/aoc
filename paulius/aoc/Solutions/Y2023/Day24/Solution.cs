@@ -1,8 +1,4 @@
 ﻿using Tools;
-using System.Diagnostics;
-using System.Numerics;
-using System.Diagnostics.CodeAnalysis;
-using Numerics;
 
 namespace Days.Y2023.Day24;
 using Input = Ray[];

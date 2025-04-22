@@ -1,5 +1,4 @@
 ﻿using MoreLinq.Extensions;
-using System.Collections;
 using Tools;
 using Rule = (long, long);
 using Input = ((long, long)[] Rules, long[][] Updates);
