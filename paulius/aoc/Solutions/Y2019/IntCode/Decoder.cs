@@ -64,7 +64,7 @@
                 },
                 99 => new Instruction
                 {
-                    Exec = (r, m) => r.Halt = true
+                    Exec = InstructionOperations.Halt
                 }
             };
         }

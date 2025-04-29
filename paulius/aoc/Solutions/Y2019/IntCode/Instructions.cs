@@ -1,6 +1,6 @@
 ﻿namespace Days.Y2019.IntCode
 {
-    delegate void Operation(Registers r, MemCell[] m);
+    delegate Task Operation(Registers r, MemCell[] m);
 
     class Instruction
     {
@@ -10,32 +10,32 @@
 
     class InstructionOperations
     {
-        public static void Add(Registers r, MemCell[] m)
+        public static Task Add(Registers r, MemCell[] m)
         {
             var (a, b, c) = (m[0], m[1], m[2]);
 
             c.Value = a.Value + b.Value;
+            return Task.CompletedTask;
         }
 
-        public static void Multiply(Registers r, MemCell[] m)
+        public static Task Multiply(Registers r, MemCell[] m)
         {
             var (a, b, c) = (m[0], m[1], m[2]);
 
             c.Value = a.Value * b.Value;
+            return Task.CompletedTask;
         }
 
-        public static void Input(Registers r, MemCell[] m)
+        public static async Task Input(Registers r, MemCell[] m)
         {
             var a = m[0];
-            Console.Write("INPUT ");
-            a.Value = int.Parse(Console.ReadLine());
+            a.Value = await r.IN.ReadAsync();
         }
 
-        public static void Output(Registers r, MemCell[] m)
+        public static async Task Output(Registers r, MemCell[] m)
         {
             var a = m[0];
-
-            Console.WriteLine($"OUTPUT {a}");
+            await r.OUT.WriteAsync(a.Value);
         }
 
         public static Operation JumpIf(bool v)
@@ -47,19 +47,28 @@
                 {
                     r.IP = b.Value;
                 }
+                return Task.CompletedTask;
             };
         }
 
-        public static void LessThen(Registers r, MemCell[] m)
+        public static Task LessThen(Registers r, MemCell[] m)
         {
             var (a, b, c) = (m[0], m[1], m[2]);
             c.Value = a.Value < b.Value ? 1 : 0;
+            return Task.CompletedTask;
         }
 
-        public static void Equal(Registers r, MemCell[] m)
+        public static Task Equal(Registers r, MemCell[] m)
         {
             var (a, b, c) = (m[0], m[1], m[2]);
             c.Value = a.Value == b.Value ? 1 : 0;
+            return Task.CompletedTask;
+        }
+
+        public static Task Halt(Registers r, MemCell[] m)
+        {
+            r.Halt = true;
+            return Task.CompletedTask;
         }
     }
 }
