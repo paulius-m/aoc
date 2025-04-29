@@ -1,5 +1,4 @@
 ﻿using Days.Y2019.IntCode;
-using System.Threading.Channels;
 using Tools;
 
 
@@ -17,7 +16,7 @@ file class Solution : ISolution<Input>
     {
         var memory = new IntCode.Memory<long>(input.Split(",").Select(v => new MemCell<long> { Value = long.Parse(v) }).ToArray());
 
-        var brain = new Brain(memory);
+        var brain = new ProcessingUnit(memory);
 
         var robotTask = RunRobot(brain, 0);
         await brain.Run();
@@ -28,7 +27,7 @@ file class Solution : ISolution<Input>
     {
         var memory = new IntCode.Memory<long>(input.Split(",").Select(v => new MemCell<long> { Value = long.Parse(v) }).ToArray());
 
-        var brain = new Brain(memory);
+        var brain = new ProcessingUnit(memory);
 
         var robotTask = RunRobot(brain, 1);
         await brain.Run();
@@ -54,7 +53,7 @@ file class Solution : ISolution<Input>
         return string.Join('\n', image.Select(ca => new string(ca)));
     }
 
-    private static async Task<Dictionary<(int, int), int>> RunRobot(Brain cpu, int initialColor)
+    private static async Task<Dictionary<(int, int), int>> RunRobot(ProcessingUnit cpu, int initialColor)
     {
         await Task.Yield();
         var robot = (0, 0);
@@ -96,45 +95,5 @@ file class Solution : ISolution<Input>
             //Console.WriteLine(painted.Count);
         }
         return painted;
-    }
-}
-
-class Brain
-{
-    private Registers<long> Registers;
-    private IntCode.Memory<long> Memory;
-    private Decoder<long> Cpu;
-
-    public ChannelWriter<long> IN { get; }
-    public ChannelReader<long> OUT { get; }
-
-    public Brain(IntCode.Memory<long> memory)
-    {
-        var channel = Channel.CreateUnbounded<long>();
-        var outchannel = Channel.CreateUnbounded<long>();
-        var registers = new Registers<long>
-        {
-            IN = channel,
-            OUT = outchannel,
-        };
-        Memory = memory;
-        Cpu = new Decoder<long>(memory, registers);
-        Registers = registers;
-        IN = channel;
-        OUT = outchannel;
-    }
-
-    public async Task Run()
-    {
-        await Task.Yield();
-        for (; !Registers.Halt;)
-        {
-            var instruction = Cpu.Decode(Memory[Registers.IP++]);
-
-            var cells = instruction.Modes.Select(m => m[Registers.IP++]).ToArray();
-            //Console.WriteLine(instruction.Exec.Method);
-            await instruction.Exec(Registers, cells);
-        }
-        Registers.OUT.Complete();
     }
 }
