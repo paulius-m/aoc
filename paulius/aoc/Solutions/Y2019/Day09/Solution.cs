@@ -15,17 +15,17 @@ namespace Days.Y2019.Day09
 
         public Task<object> Part1Async(Input input)
         {
-            return Run(input, 1);
+            return Run(input, 1L);
         }
 
-        private static async Task<object> Run(string input, BigInteger i)
+        private static async Task<object> Run<T>(string input, T i) where T : notnull, INumber<T>
         {
-            var memory = new IntCode.Memory<BigInteger>(input.Split(",").Select(v => new MemCell<BigInteger> { Value = BigInteger.Parse(v) }).ToArray());
-            var IN = Channel.CreateUnbounded<BigInteger>();
-            var OUT = Channel.CreateUnbounded<BigInteger>();
+            var memory = new IntCode.Memory<T>(input.Split(",").Select(v => new MemCell<T> { Value = T.Parse(v, null) }).ToArray());
+            var IN = Channel.CreateUnbounded<T>();
+            var OUT = Channel.CreateUnbounded<T>();
 
-            var registers = new Registers<BigInteger>() { IN = IN, OUT = OUT };
-            var cpu = new Decoder<BigInteger>(memory, registers);
+            var registers = new Registers<T>() { IN = IN, OUT = OUT };
+            var cpu = new Decoder<T>(memory, registers);
             await IN.Writer.WriteAsync(i);
             for (; !registers.Halt;)
             {
@@ -41,7 +41,7 @@ namespace Days.Y2019.Day09
 
         public Task<object> Part2Async(Input input)
         {
-            return Run(input, 2);
+            return Run(input, 2L);
         }
     }
 }
