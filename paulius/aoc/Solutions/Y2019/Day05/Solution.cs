@@ -4,14 +4,14 @@ using System.Threading.Channels;
 using Tools;
 
 namespace Days.Y2019.Day05;
-using Input = (Decoder, MemCell[]);
+using Input = (Decoder<int>, MemCell<int>[]);
 file class Solution : ISolution<Input>
 {
     public async Task<Input> LoadInput()
     {
         var input = await File.ReadAllTextAsync(this.GetInputFile("input"));
-        var memory = input.Split(",").Select(v => new MemCell { Value = int.Parse(v) }).ToArray();
-        var cpu = new Decoder(memory);
+        var memory = input.Split(",").Select(v => new MemCell<int> { Value = int.Parse(v) }).ToArray();
+        var cpu = new Decoder<int>(memory);
         return (cpu, memory);
     }
 
@@ -20,7 +20,7 @@ file class Solution : ISolution<Input>
         var (cpu, memory) = i;
         var IN = Channel.CreateUnbounded<int>();
         var OUT = Channel.CreateUnbounded<int>();
-        var registers = new Registers() { IN = IN, OUT = OUT};
+        var registers = new Registers<int>() { IN = IN, OUT = OUT};
         await IN.Writer.WriteAsync(1);
         for (; !registers.Halt;)
         {
@@ -39,7 +39,7 @@ file class Solution : ISolution<Input>
         var (cpu, memory) = i;
         var IN = Channel.CreateUnbounded<int>();
         var OUT = Channel.CreateUnbounded<int>();
-        var registers = new Registers() { IN = IN, OUT = OUT };
+        var registers = new Registers<int>() { IN = IN, OUT = OUT };
         await IN.Writer.WriteAsync(5);
         for (; !registers.Halt;)
         {

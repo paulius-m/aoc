@@ -62,17 +62,17 @@ file class Solution : ISolution<Input>
         {
             await channels[i].Writer.WriteAsync(inputs[i]);
 
-            var registers = new Registers
+            var registers = new Registers<int>
             {
                 IN = channels[i],
                 OUT = channels[i + 1],
             };
 
-            var memory = input.Split(",").Select(v => new MemCell { Value = int.Parse(v) }).ToArray();
+            var memory = input.Split(",").Select(v => new MemCell<int> { Value = int.Parse(v) }).ToArray();
 
             amps[i] = new Amp
             {
-                Cpu = new Decoder(memory),
+                Cpu = new Decoder<int>(memory),
                 Memory = memory,
                 Registers = registers,
                 ID = i
@@ -95,17 +95,17 @@ file class Solution : ISolution<Input>
         {
             await channels[i].Writer.WriteAsync(inputs[i]);
 
-            var registers = new Registers
+            var registers = new Registers<int>
             {
                 IN = channels[i],
                 OUT = channels[(i + 1 + channels.Length) % channels.Length],
             };
 
-            var memory = input.Split(",").Select(v => new MemCell { Value = int.Parse(v) }).ToArray();
+            var memory = input.Split(",").Select(v => new MemCell<int> { Value = int.Parse(v) }).ToArray();
 
             amps[i] = new Amp
             {
-                Cpu = new Decoder(memory),
+                Cpu = new Decoder<int>(memory),
                 Memory = memory,
                 Registers = registers
             };
@@ -120,9 +120,9 @@ file class Solution : ISolution<Input>
 }
 file class Amp
 {
-    public Registers Registers;
-    public MemCell[] Memory;
-    public Decoder Cpu;
+    public Registers<int> Registers;
+    public MemCell<int>[] Memory;
+    public Decoder<int> Cpu;
     public int ID;
 
     public async Task Run()
