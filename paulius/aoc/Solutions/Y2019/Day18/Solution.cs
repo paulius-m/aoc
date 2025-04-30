@@ -1,9 +1,9 @@
 ﻿using Days.Y2023.Day05;
 using Tools;
-
+using static Tools.Neighbourhoods;
 
 namespace Days.Y2019.Day18;
-using Input = Dictionary<Coord, char>;
+using Input = Grid<char>;
 
 file class Solution : ISolution<Input>
 {
@@ -11,7 +11,7 @@ file class Solution : ISolution<Input>
     {
         var lines = await File.ReadAllLinesAsync(this.GetInputFile("input"));
 
-        var map = lines.SelectMany((line, y) => line.Select((c, x) => (new Coord(x, y), c))).ToDictionary(c => c.Item1, c => c.Item2);
+        var map = new Input(lines.SelectMany((line, y) => line.Select((c, x) => KeyValuePair.Create(new Coord2D(y, x), c))));
         return map;
     }
 
@@ -35,7 +35,7 @@ file class Solution : ISolution<Input>
         Dictionary<char, Dictionary<HashSet<char>, long>> cache = new();
         long minminCost = int.MaxValue;
 
-        return FindSolution(transitions, '@', new[] { '@' }, 0);
+        return FindSolution(transitions, '@', ['@'], 0);
 
         long FindSolution(Dictionary<char, Transition[]> transitions, char current, char[] path, long currentCost)
         {
@@ -98,20 +98,19 @@ file class Solution : ISolution<Input>
     public object Part2(Input map)
     {
         var startPos = map.First(m => m.Value is '@').Key;
-        map[new(startPos.x - 1, startPos.y - 1)] = '1';
-        map[new(startPos.x , startPos.y - 1)] = '#';
-        map[new(startPos.x + 1, startPos.y - 1)] = '2';
+        map[new(startPos.c - 1, startPos.r - 1)] = '1';
+        map[new(startPos.c ,    startPos.r - 1)] = '#';
+        map[new(startPos.c + 1, startPos.r - 1)] = '2';
 
-        map[new(startPos.x - 1, startPos.y)] = '#';
-        map[new(startPos.x , startPos.y)] = '#';
-        map[new(startPos.x + 1, startPos.y)] = '#';
+        map[new(startPos.c - 1, startPos.r)] = '#';
+        map[new(startPos.c ,    startPos.r)] = '#';
+        map[new(startPos.c + 1, startPos.r)] = '#';
 
-        map[new(startPos.x - 1, startPos.y + 1)] = '3';
-        map[new(startPos.x, startPos.y + 1)] = '#';
-        map[new(startPos.x + 1, startPos.y + 1)] = '4';
+        map[new(startPos.c - 1, startPos.r + 1)] = '3';
+        map[new(startPos.c,     startPos.r + 1)] = '#';
+        map[new(startPos.c + 1, startPos.r + 1)] = '4';
 
-        var g = new Grid<char>( from kv in map select KeyValuePair.Create(new Neighbourhoods.Coord2D(kv.Key.y, kv.Key.x), kv.Value ) );
-        Console.WriteLine( g.ToRectString() );
+        Console.WriteLine( map.ToRectString() );
 
         var starts = map.Where(m => char.IsNumber(m.Value)).ToArray();
 
@@ -200,21 +199,12 @@ file class Solution : ISolution<Input>
         }
     }
 
-    private static int[] ncoords = new[] { -1, 0, 1 };
-
-    private static Coord[] near4 = (from c in ncoords
-                                    from r in ncoords
-                                    where (r is 0 || c is 0) && (r, c) is not (0, 0)
-                                    select new Coord(r, c)).ToArray();
-
-
-
-    public static Dictionary<char, int> FindPaths(Dictionary<Coord, char> map, Coord start, HashSet<char> visited)
+    public static Dictionary<char, int> FindPaths(Grid<char> map, Coord2D start, HashSet<char> visited)
     {
         var nodes = new Dictionary<char, int>();
 
-        var costs = new Dictionary<Coord, int> { [start] = 0 };
-        var toVisit = new PriorityQueue<Coord, int>();
+        var costs = new Dictionary<Coord2D, int> { [start] = 0 };
+        var toVisit = new PriorityQueue<Coord2D, int>();
         toVisit.Enqueue(start, 0);
 
         while (toVisit.Count > 0)
@@ -222,10 +212,9 @@ file class Solution : ISolution<Input>
             var current = toVisit.Dequeue();
             var currentRisk = costs[current];
 
-            foreach (var (pos, cost) in from n in near4
-                                        select new Coord(current.x + n.x, current.y + n.y) into nn
-                                        where map[nn] is not '#'
-                                        select (nn, 1))
+            foreach (var (pos, cost) in from n in GetNear4(current)
+                                        where map[n] is not '#'
+                                        select (n, 1))
             {
                 var realCost = cost + currentRisk;
                 if (realCost < costs.GetValueOrDefault(pos, int.MaxValue))
@@ -283,5 +272,3 @@ file class Solution : ISolution<Input>
 }
 
 record Transition(char from, char to, int cost);
-
-record Coord(int x, int y);
