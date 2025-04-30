@@ -24,7 +24,7 @@ internal class Render
     internal static void Draw(Dictionary<string, Vector2> vertexes, ImmutableDictionary<string, HashSet<string>> graph)
     {
         Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.BLACK);
+        Raylib.ClearBackground(Color.Black);
 
         Raylib.BeginMode2D(camera);
 
@@ -32,7 +32,7 @@ internal class Render
         {
             foreach (var v in vs)
             {
-                Raylib.DrawLineEx(vertexes[u], vertexes[v], 0.5f, Color.WHITE);
+                Raylib.DrawLineEx(vertexes[u], vertexes[v], 0.5f, Color.White);
             }
             Raylib.DrawPixelV(vertexes[u], new Color((byte)(vertexes[u].X / 100 * byte.MaxValue), (byte)(vertexes[u].Y / 100 * byte.MaxValue), (byte)0, (byte)100));
         }

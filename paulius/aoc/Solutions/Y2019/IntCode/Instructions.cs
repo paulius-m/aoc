@@ -32,7 +32,11 @@ namespace Days.Y2019.IntCode
         public static async Task Input<T>(Registers<T> r, MemCell<T>[] m) where T : notnull, INumber<T>
         {
             var a = m[0];
-            a.Value = await r.IN.ReadAsync();
+
+            if (await r.IN.WaitToReadAsync())
+                a.Value = await r.IN.ReadAsync();
+            else
+                await Halt(r, m);
         }
 
         public static async Task Output<T>(Registers<T> r, MemCell<T>[] m) where T : notnull, INumber<T>
