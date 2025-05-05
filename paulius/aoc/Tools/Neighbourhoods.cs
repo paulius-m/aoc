@@ -86,4 +86,63 @@ public static class Neighbourhoods
 
         return distance;
     }
+
+    public static long GetDistanceTo<TMap, T>(TMap map, T start, T end, CostFunction<TMap, T> cost, NextFunction<TMap, T> next, CostFunction<TMap, T> fCost)
+    {
+        Dictionary<T, long> gScore = new() { [start] = 0 };
+
+        PrioritySet<T, long> openSet = new();
+        openSet.Add(start, fCost(map, start, end).Value);
+
+        while (true)
+        {
+            var current = openSet.Dequeue();
+
+            if (current.Equals(end))
+            {
+                return gScore[current];
+            }
+
+            foreach (var neighbor in from n in next(map, current)
+                                             select n)
+            {
+                
+                var nCost = cost(map, current, neighbor);
+                if (nCost is null) continue;
+
+                var totalCost = gScore[current] + nCost.Value;
+
+                if (totalCost < gScore.GetValueOrDefault(neighbor, long.MaxValue))
+                {
+                    gScore[neighbor] = totalCost;
+
+                    if (!openSet.Contains(neighbor))
+                    {
+                        openSet.Add(neighbor, totalCost + fCost(map, neighbor, end).Value);
+                    }
+                }
+            }
+        }
+    }
+
+    class PrioritySet<T1, T2>
+    {
+        HashSet<T1> _set = new();
+        PriorityQueue<T1, T2> _queue = new PriorityQueue<T1, T2>();
+
+
+        public void Add(T1 t1, T2 t2)
+        {
+            _queue.Enqueue(t1, t2);
+            _set.Add(t1);
+        }
+
+        public bool Contains(T1 t1) { return _set.Contains(t1); }
+        public T1 Dequeue()
+        {
+            var t1 = _queue.Dequeue();
+            _set.Remove(t1);
+            return t1;
+        }
+    }
 }
