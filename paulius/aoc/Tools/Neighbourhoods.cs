@@ -48,6 +48,7 @@ public static class Neighbourhoods
         public static Coord2D operator -(Coord2D a, Coord2D b) => new(a.r - b.r, a.c - b.c);
         public static Coord2D operator -(Coord2D a) => new(-a.r, -a.c);
         public static Coord2D operator *(Coord2D a, long b) => new(a.r * b, a.c * b);
+        public static Coord2D operator *(Coord2D a, Coord2D b) => new(a.r * b.r, a.c * b.c);
         public Coord2D RotateRight() => new(c, -r);
         public Coord2D RotateLeft() => new(-c, r);
 
