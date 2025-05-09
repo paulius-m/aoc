@@ -4,14 +4,14 @@ using System.Threading.Channels;
 using Tools;
 
 namespace Days.Y2019.Day05;
-using Input = (Decoder<int>, MemCell<int>[]);
+using Input = (Decoder<int>, IntCode.Memory<int>);
 file class Solution : ISolution<Input>
 {
     public async Task<Input> LoadInput()
     {
         var input = await File.ReadAllTextAsync(this.GetInputFile("input"));
-        var memory = input.Split(",").Select(v => new MemCell<int> { Value = int.Parse(v) }).ToArray();
-        var cpu = new Decoder<int>(memory);
+        var memory = new IntCode.Memory<int>(input.Split(",").Select(v => new MemCell<int> { Value = int.Parse(v) }).ToArray());
+        var cpu = new Decoder<int>();
         return (cpu, memory);
     }
 
@@ -26,9 +26,9 @@ file class Solution : ISolution<Input>
         {
             var instruction = cpu.Decode(memory[registers.IP++]);
 
-            var cells = instruction.Modes.Select(m => m[registers.IP++]).ToArray();
+            var cells = instruction.Modes.Select(m => m.Get(memory, registers, registers.IP++)).ToArray();
 
-            await instruction.Exec(registers, cells);
+            await instruction.AsycOp(registers, cells);
         }
         OUT.Writer.Complete();
         return await OUT.Reader.ReadAllAsync().LastAsync();
@@ -45,9 +45,9 @@ file class Solution : ISolution<Input>
         {
             var instruction = cpu.Decode(memory[registers.IP++]);
 
-            var cells = instruction.Modes.Select(m => m[registers.IP++]).ToArray();
+            var cells = instruction.Modes.Select(m => m.Get(memory, registers, registers.IP++)).ToArray();
 
-            await instruction.Exec(registers, cells);
+            await instruction.AsycOp(registers, cells);
         }
         return await OUT.Reader.ReadAsync();
     }

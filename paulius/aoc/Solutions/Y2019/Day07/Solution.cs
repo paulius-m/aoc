@@ -72,8 +72,8 @@ file class Solution : ISolution<Input>
 
             amps[i] = new Amp
             {
-                Cpu = new Decoder<int>(memory),
-                Memory = memory,
+                Cpu = new Decoder<int>(),
+                Memory = new IntCode.Memory<int>(memory),
                 Registers = registers,
                 ID = i
             };
@@ -105,8 +105,8 @@ file class Solution : ISolution<Input>
 
             amps[i] = new Amp
             {
-                Cpu = new Decoder<int>(memory),
-                Memory = memory,
+                Cpu = new Decoder<int>(),
+                Memory = new IntCode.Memory<int>(memory),
                 Registers = registers
             };
         }
@@ -121,7 +121,7 @@ file class Solution : ISolution<Input>
 file class Amp
 {
     public Registers<int> Registers;
-    public MemCell<int>[] Memory;
+    public IntCode.Memory<int> Memory;
     public Decoder<int> Cpu;
     public int ID;
 
@@ -132,9 +132,9 @@ file class Amp
         {
             var instruction = Cpu.Decode(Memory[Registers.IP++]);
 
-            var cells = instruction.Modes.Select(m => m[Registers.IP++]).ToArray();
+            var cells = instruction.Modes.SelectArray(m => m.Get(Memory, Registers, Registers.IP++));
             //Console.WriteLine($"{ID} {instruction.Exec.Method}");
-            await instruction.Exec(Registers, cells);
+            await instruction.AsycOp(Registers, cells);
         }
         //Console.WriteLine($"{ID} HALTED");
     }

@@ -25,11 +25,14 @@ namespace Days.Y2019.IntCode
         {
             get
             {
-                if (!_memory.ContainsKey(addr))
+                if (_memory.TryGetValue(addr, out var value))
                 {
-                    _memory[addr] = new MemCell<T>();
+                    return value;
                 }
-                return _memory[addr];
+
+                var n = new MemCell<T>();
+                _memory[addr] = n;
+                return n;
             }
         }
 

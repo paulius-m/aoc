@@ -47,26 +47,7 @@ file record Equation(long Result, long[] Values)
 {
     public bool Solvable(params Op[] operators)
     {
-        return Combinations(operators, Values.Length)
+        return EnumerableEx.Combinations(operators, Values.Length)
             .Any(c => Values[1..].Zip(c).Aggregate(Values[0], (a, b) => b.Second(a, b.First)) == Result);
-    }
-
-    private static IEnumerable<Op[]> Combinations(Op[] operators, int length)
-    {
-        var combinationCount = Math.Pow(operators.Length, length);
-
-        var combination = new Op[length];
-
-        for (var i = 0; i < combinationCount; i++)
-        {
-            var v = i;
-            for (var j = 0; j < length; j++)
-            {
-                var opIdx = v % operators.Length;
-                v = v / operators.Length;
-                combination[j] = operators[opIdx];
-            }
-            yield return combination;
-        }
     }
 }

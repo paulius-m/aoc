@@ -25,15 +25,15 @@ namespace Days.Y2019.Day09
             var OUT = Channel.CreateUnbounded<T>();
 
             var registers = new Registers<T>() { IN = IN, OUT = OUT };
-            var cpu = new Decoder<T>(memory, registers);
+            var cpu = new Decoder<T>();
             await IN.Writer.WriteAsync(i);
             for (; !registers.Halt;)
             {
                 var instruction = cpu.Decode(memory[registers.IP++]);
 
-                var cells = instruction.Modes.Select(m => m[registers.IP++]).ToArray();
+                var cells = instruction.Modes.SelectArray(m => m.Get(memory, registers, registers.IP++));
 
-                await instruction.Exec(registers, cells);
+                await instruction.AsycOp(registers, cells);
             }
 
             return await OUT.Reader.ReadAsync();
