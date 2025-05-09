@@ -1,0 +1,15 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
+  <TemplateData>
+    <DefaultName>AocDay</DefaultName>
+    <Name>AocDay</Name>
+    <Description>A template to add new Day for AOC puzzles.</Description>
+    <ProjectType>CSharp</ProjectType>
+    <SortOrder>100</SortOrder>
+  </TemplateData>
+  <TemplateContent>
+    <References />
+    <ProjectItem TargetFileName="$fileinputname$/Solution.cs" SubType="" ReplaceParameters="true">Solution.cs</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$/input.txt" SubType="" ReplaceParameters="true">input.txt</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$/test.txt" SubType="" ReplaceParameters="true">test.txt</ProjectItem>
+  </TemplateContent>
+</VSTemplate>
