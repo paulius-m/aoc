@@ -50,16 +50,34 @@ class ProcessingUnit
             else
                 await instruction.AsycOp(Registers, cells);
 
-            //var ops = string.Join (" ", instruction.Modes.Select((m, i) => m switch
-            //{
-            //    PositionModeRef<long> => "@" + cells[i].Value,
-            //    ImmediateModeRef<long> => "" + cells[i].Value,
-            //    RelativeModeRef<long> => "R" + cells[i].Value
-            //}));
+            var ops = string.Join(" ", instruction.Modes.Select((m, i) => m switch
+            {
+                PositionModeRef<long> => "@" + cells[i].Value,
+                ImmediateModeRef<long> => "" + cells[i].Value,
+                RelativeModeRef<long> => cells[i].Value + "+RB"
+            }));
 
             //programAsm[ip] = $"{instruction.Op?.Method.Name ?? instruction.AsycOp?.Method.Name} {ops}";
-
+            //for (var i = 0; i < instruction.Modes.Length; i++)
+            //{
+            //    programAsm[ip + i + 1] = "";
+            //}
         }
+        //foreach (var (addr, memcell) in Memory)
+        //{
+        //    if (!programAsm.ContainsKey(addr))
+        //    {
+        //        programAsm[addr] = memcell.ToString();
+        //    }
+        //}
+
+        //foreach (var (line, cod) in programAsm)
+        //{
+        //    if (cod is "") continue;
+        //    Console.WriteLine($"{line}: \t {cod}");
+        //}
+
+
         Registers.OUT.Complete();
     }
 }

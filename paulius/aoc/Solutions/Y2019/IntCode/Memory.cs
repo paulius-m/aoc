@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections;
+using System.Numerics;
 using System.Threading.Channels;
 
 namespace Days.Y2019.IntCode
@@ -12,16 +13,17 @@ namespace Days.Y2019.IntCode
         }
     }
 
-    public class Memory<T> where T : notnull, INumber<T>
+    public class Memory<T> : IEnumerable<KeyValuePair<long, MemCell<T>>> where T : notnull, INumber<T> 
     {
-        Dictionary<int, MemCell<T>> _memory;
+        Dictionary<long, MemCell<T>> _memory;
 
         public Memory(MemCell<T>[] m)
         {
-            var i = 0;
+            long i = 0;
             _memory = m.ToDictionary(a => i++, a => a);
         }
-        public MemCell<T> this[int addr]
+
+        public MemCell<T> this[long addr]
         {
             get
             {
@@ -40,8 +42,18 @@ namespace Days.Y2019.IntCode
         {
             get
             {
-                return this[int.CreateChecked(addr)];
+                return this[long.CreateChecked(addr)];
             }
+        }
+
+        public IEnumerator<KeyValuePair<long, MemCell<T>>> GetEnumerator()
+        {
+            return _memory.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 
