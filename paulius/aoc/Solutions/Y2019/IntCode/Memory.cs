@@ -6,7 +6,7 @@ namespace Days.Y2019.IntCode
 {
     public class MemCell<T> where T: notnull
     {
-        public T Value = default;
+        public required T Value;
         public override string ToString()
         {
             return Value.ToString();
@@ -32,7 +32,7 @@ namespace Days.Y2019.IntCode
                     return value;
                 }
 
-                var n = new MemCell<T>();
+                var n = new MemCell<T> { Value = T.AdditiveIdentity };
                 _memory[addr] = n;
                 return n;
             }

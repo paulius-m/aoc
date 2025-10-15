@@ -10,16 +10,10 @@ namespace Days.Y2019.IntCode
                 new ImmediateModeRef<T>(),
                 new RelativeModeRef<T>()
             ];
-        private static readonly Dictionary<int, Instruction<T>> _instructions = new ();
 
         public Instruction<T> Decode(MemCell<T> opCell)
         {
             var v = int.CreateChecked(opCell.Value);
-
-            if (_instructions.TryGetValue(v, out var cached))
-            {
-                return cached;
-            }
 
             var op = v % 100;
             var modes = new[] { v / 100 % 10, v / 1000 % 10, v / 10000 % 10 }.Select(v => _modes[v]);
@@ -77,7 +71,6 @@ namespace Days.Y2019.IntCode
                 }
             };
 
-            _instructions[v] = instruction;
             return instruction;
         }
     }
