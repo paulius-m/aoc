@@ -1,5 +1,4 @@
-﻿using MoreLinq.Extensions;
-using Tools;
+﻿using Tools;
 using Input = System.Collections.Generic.IEnumerable<long>;
 
 namespace Days.Y2025.Day01;

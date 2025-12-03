@@ -1,5 +1,4 @@
-﻿using Days.Y2023.Day06;
-using Tools;
+﻿using Tools;
 using Input = System.Collections.Generic.IEnumerable<(long, long)>;
 
 namespace Days.Y2025.Day02;
@@ -66,7 +65,6 @@ file class Solution : ISolution<Input>
             }
         }
     }
-
 
     IEnumerable<long> GetInvalidIdsMultiSplit(long f, long t)
     {
