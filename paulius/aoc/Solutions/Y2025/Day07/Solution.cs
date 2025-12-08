@@ -59,7 +59,7 @@ file class Solution : ISolution<Input>
                             select (g.Key, g.Sum())
                             ).ToArray();
 
-            beams = newBeams.ToArray();
+            beams = newBeams;
 
         }
         return beams.Sum(b => b.Count);
